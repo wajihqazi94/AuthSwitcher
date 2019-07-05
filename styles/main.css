@@ -92,7 +92,7 @@
 }
 
 /* Skin for Simple Dialog Box Plugin */
-.dialog-box {
+.dialog-box-auth {
   width:300px;
   height:150px;
   background-color:white;
@@ -111,7 +111,7 @@
   visibility:hidden;
   opacity:0;
 }
-.dialog-box .dialog-title {
+.dialog-box-auth .dialog-title {
   margin:0;
   padding:0;
   font:inherit;
@@ -124,7 +124,7 @@
   background-color:#FFFFFF;
   cursor:move;
 }
-.dialog-box .dialog-content {
+.dialog-box-auth .dialog-content {
   border-top:1px solid #ccc;
   padding:1em;
   position:absolute;
@@ -134,7 +134,7 @@
   left:0;
   overflow:auto;
 }
-.dialog-box .dialog-content iframe {
+.dialog-box-auth .dialog-content iframe {
   display:block;
   border:none;
   background:none;
@@ -144,19 +144,19 @@
   width:100%;
   height:100%;
 }
-.dialog-box .dialog-content::-webkit-scrollbar {
+.dialog-box-auth .dialog-content::-webkit-scrollbar {
   width:8px;
   height:8px;
   background-color:#f5f5f5;
   border-left:1px solid #ccc;
 }
-.dialog-box .dialog-content::-webkit-scrollbar-thumb {
+.dialog-box-auth .dialog-content::-webkit-scrollbar-thumb {
   background-color:#666;
   border:none;
 }
-.dialog-box .dialog-content::-webkit-scrollbar-thumb:hover {background-color:#555}
-.dialog-box .dialog-content::-webkit-scrollbar-thumb:active {background-color:#444}
-.dialog-box .dialog-action {
+.dialog-box-auth .dialog-content::-webkit-scrollbar-thumb:hover {background-color:#555}
+.dialog-box-auth .dialog-content::-webkit-scrollbar-thumb:active {background-color:#444}
+.dialog-box-auth .dialog-action {
   position:absolute;
   right:0;
   bottom:0;
@@ -167,7 +167,7 @@
   border-top:1px solid #ccc;
   text-align:right;
 }
-.dialog-box .dialog-action .btn, .btn {
+.dialog-box-auth .dialog-action .btn, .btn {
   text-decoration:none;
   border:none;
   outline:none;
@@ -183,8 +183,8 @@
   line-height:2em;
   cursor:pointer;
 }
-.dialog-box .dialog-close,
-.dialog-box .dialog-minmax {
+.dialog-box-auth .dialog-close,
+.dialog-box-auth .dialog-minmax {
   border:none;
   outline:none;
   background:none;
@@ -202,33 +202,33 @@
   text-align:center;
   cursor:pointer;
 }
-.dialog-box .dialog-minmax {right:1.5em}
-.dialog-box .dialog-close:focus,
-.dialog-box .dialog-minmax:focus,
-.dialog-box .dialog-action .btn:focus {
+.dialog-box-auth .dialog-minmax {right:1.5em}
+.dialog-box-auth .dialog-close:focus,
+.dialog-box-auth .dialog-minmax:focus,
+.dialog-box-auth .dialog-action .btn:focus {
   border-width:0;
   outline:none;
 }
-.dialog-box .dialog-close:hover,
-.dialog-box .dialog-minmax:hover {color:#777}
-.dialog-box .dialog-close:focus,
-.dialog-box .dialog-minmax:focus {color:#C90000}
-.dialog-box .dialog-close:active,
-.dialog-box .dialog-minmax:active {color:#444}
-.dialog-box .dialog-action .btn:hover, .btn:hover {
+.dialog-box-auth .dialog-close:hover,
+.dialog-box-auth .dialog-minmax:hover {color:#777}
+.dialog-box-auth .dialog-close:focus,
+.dialog-box-auth .dialog-minmax:focus {color:#C90000}
+.dialog-box-auth .dialog-close:active,
+.dialog-box-auth .dialog-minmax:active {color:#444}
+.dialog-box-auth .dialog-action .btn:hover, .btn:hover {
 	border-color:#5293c6;
 	background: #d1e7fb;
 }
-.dialog-box .dialog-action .btn:focus {
+.dialog-box-auth .dialog-action .btn:focus {
   border-color:#2c7ab1;
   border-width:1px;
 }
-.dialog-box .dialog-action .btn:active, .btn:active {
+.dialog-box-auth .dialog-action .btn:active, .btn:active {
   color: #fff;
   border-color:#2c7ab1;
   background-color:#2c7ab1;
 }
-.dialog-box + .dialog-box-overlay {
+.dialog-box-auth + .dialog-box-auth-overlay {
   background-color:black;
   opacity:.2;
   filter:alpha(opacity=20);
@@ -241,11 +241,11 @@
   z-index:9997;
   display:none;
 }
-.dialog-box.fixed-dialog-box {
+.dialog-box-auth.fixed-dialog-box-auth {
   position:fixed !important;
   position:absolute;
 }
-.dialog-box.minimize {
+.dialog-box-auth.minimize {
   width:2em !important;
   height:2em !important;
   overflow:hidden !important;
@@ -254,18 +254,18 @@
   top:-1px !important;
   left:1em !important;
 }
-.dialog-box.minimize .dialog-title {
+.dialog-box-auth.minimize .dialog-title {
   color:transparent;
   text-shadow:none;
   text-indent:-9999px;
 }
-.dialog-box.minimize .dialog-minmax {
+.dialog-box-auth.minimize .dialog-minmax {
   right:0;
   left:0;
 }
-.dialog-box.minimize .dialog-close,
-.dialog-box.minimize .dialog-content,
-.dialog-box.minimize .dialog-action {
+.dialog-box-auth.minimize .dialog-close,
+.dialog-box-auth.minimize .dialog-content,
+.dialog-box-auth.minimize .dialog-action {
   display:none;
   visibility:hidden;
 }
