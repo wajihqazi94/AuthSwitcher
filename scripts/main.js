@@ -422,16 +422,16 @@ geotab.addin.authoritySwitcher = function(api, state) {
 			(function() { // Create the dialog box markup
 				var div = b.createElement('div'),
 					ovr = b.createElement('div');
-					div.className = 'dialog-box';
-					div.id = 'dialog-box-' + uniqueId;
+					div.className = 'dialog-box-auth';
+					div.id = 'dialog-box-auth-' + uniqueId;
 					div.innerHTML = '<div class="dialog-title">&nbsp;</div><a href="javascript:;" class="dialog-minmax" title="Minimize">&ndash;</a><a href="javascript:;" class="dialog-close" title="Close">&times;</a><div class="dialog-content">&nbsp;</div><div class="dialog-action"></div>';
-					ovr.className = 'dialog-box-overlay';
+					ovr.className = 'dialog-box-auth-overlay';
 				b.body.appendChild(div);
 				b.body.appendChild(ovr);
 			})();
 
 			var maximize = false,
-				dialog = b.getElementById('dialog-box-' + uniqueId), // The HTML of dialog box
+				dialog = b.getElementById('dialog-box-auth-' + uniqueId), // The HTML of dialog box
 				dialog_title = dialog.children[0],
 				dialog_minmax = dialog.children[1],
 				dialog_close = dialog.children[2],
@@ -490,7 +490,7 @@ geotab.addin.authoritySwitcher = function(api, state) {
 					selected = null;
 				}
 
-				dialog.className =  "dialog-box " + (defaults.fixed ? 'fixed-dialog-box ' : '') + defaults.specialClass;
+				dialog.className =  "dialog-box-auth " + (defaults.fixed ? 'fixed-dialog-box ' : '') + defaults.specialClass;
 				dialog.style.visibility = (set === "open") ? "visible" : "hidden";
 				dialog.style.opacity = (set === "open") ? 1 : 0;
 				dialog.style.width = defaults.width + 'px';
