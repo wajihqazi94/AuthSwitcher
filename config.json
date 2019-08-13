@@ -1,23 +1,19 @@
 {
-	"name": "Authority Switcher",
-	"supportEmail": "support@geotab.com",
-	"solutionId": "authoritySwitcher",
-	"version": "1.2.5",
-	"items": [
-		{
-			"path": "systemSettings",
-			"menuName": {
-				"en": "Authority Switcher Config"
-			},
-			"url": "https://app.geotab.com/addins/geotab/authority_switcher/1.2.5/authoritySwitcher.html"
-		},
-		{
-			"path": "DriveAppLink/",
-			"menuName": {
-				"en": "Authority Switcher"
-			},
-			"url": "https://app.geotab.com/addins/geotab/authority_switcher/1.2.5/authoritySwitcherDrive.html"
-		}
-	],
-	"isSigned": false
+  "name": "Authority Switcher",
+  "supportEmail": "support@geotab.com",
+  "version": "0.0.1",
+  "items": [{
+    "url": "authoritySwitcher.html",
+    "path": "AdministrationLink/",
+    "menuName": {
+      "en": "Authority Switcher Config"
+    },
+    "icon": "images/icon.svg"
+  }],
+  "dev": {
+    "root": "authoritySwitcher",
+    "dist": {
+      "host": "https://www.example.com/myaddin/"
+    }
+  }
 }

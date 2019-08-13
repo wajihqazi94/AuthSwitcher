@@ -19,7 +19,6 @@ geotab.addin.authoritySwitcher = function(api, state) {
 			addInDataCache = {},
 			id = "aMO4bMooow0KlW2WdaT2suw",
 			selected = "",
-			addingnew = true,
 			groupCache = {},
 			groupsSelected = [],
 			newTab = document.getElementById("newTab"),
@@ -30,19 +29,31 @@ geotab.addin.authoritySwitcher = function(api, state) {
 			errorMessageTimer,
 			
 			init = function() {
-				checkUserClearance().then(function(approved) {
+				checkUserClearance().then(async function(approved) {
 					if (approved) {
-						grabGroups().then(function(rawGroupObj) {
-							populateSelectBox(rawGroupObj, true);
-							grabAddInData().then(function(rawAddInObj) {
-								populateForm(rawAddInObj);
-							});
-						});
+						let rawGroupObj = await grabGroups();
+						populateSelectBox(rawGroupObj, true);
+						let rawAddInObj = await grabAddInData();
+						populateForm(rawAddInObj);
+						let groupIds = [];
+						for (let i = 0; i < rawGroupObj.length; i++) {
+							if (rawGroupObj[i].id !== "GroupCompanyId") {
+								groupIds.push({"id": rawGroupObj[i].id});
+							}
+						}
+						if (rawAddInObj.length === 0) {
+							let data = JSON.stringify(
+								{}
+							);
+							addDataStore(groupIds, data);
+						} else {
+							await updateAddInData(rawAddInObj, groupIds);
+						}
 					} else {
 						document.getElementById("authoritySwitcherTabs").style.display = "none";
 						helpButton.style.display = "none";
 						addNew.disabled = true;
-						errorHandler("Administrator Clearance is required to use this add-in.")
+						errorHandler("Administrator Clearance is required to use this add-in.");
 					}
 				});
 				
@@ -51,8 +62,8 @@ geotab.addin.authoritySwitcher = function(api, state) {
 				for (let prop in obj) {
 					if (obj.hasOwnProperty(prop)) {
 						return false;
-					};
-				};
+					}
+				}
 				return JSON.stringify(obj) === JSON.stringify({});
 			},
 			checkUserClearance = function() {
@@ -74,7 +85,7 @@ geotab.addin.authoritySwitcher = function(api, state) {
 							resolve(true);
 						} else {
 							resolve(false);
-						};
+						}
 					});
 				});
 			},
@@ -89,6 +100,18 @@ geotab.addin.authoritySwitcher = function(api, state) {
 					});	
 				});
 			},
+			updateAddInData = function(addInPayload, groups) {
+				addInPayload[0].groups = groups || addInPayload[0].groups;
+				return new Promise(function(resolve, reject) {
+					api.call("Set", {
+						"typeName": "AddInData",
+						"entity": addInPayload[0]
+					}, function(result) {
+						//window.location.reload(false);
+						resolve(result);
+					});
+				});
+			},
 			grabAddInData = function() {
 				return new Promise(function(resolve, reject) {
 					api.call("Get", {"typeName": "AddInData",
@@ -99,11 +122,13 @@ geotab.addin.authoritySwitcher = function(api, state) {
 						if (addInObj.length > 0) {
 							addInDataCache = JSON.parse(addInObj[0].data);
 							resolve(addInObj);
-						} else {
+						} else {							
 							resolve(addInObj);
-						};
+							// add message to use to tell them no auths exist
+						}
 					}, function (error) {
 						reject(error);
+						//add error handling
 					});
 				});
 			},
@@ -121,7 +146,6 @@ geotab.addin.authoritySwitcher = function(api, state) {
 					groupNames = [];
 				if (!isEmpty(addInDataCache)) {
 					let authorities = addInDataCache.authorities;
-					console.log(authorities);
 					
 					authorities.sort(function(a, b) {
 						if (a.authorityName.toLowerCase() < b.authorityName.toLowerCase()) {
@@ -146,26 +170,14 @@ geotab.addin.authoritySwitcher = function(api, state) {
 						authorityList.add(authorityOption);
 					}	
 					for (let j = 0; j < authorities[0].groups.length; j++) {
-						console.log(authorities[0].groups[j]);
 						groupNames.push(groupCache[authorities[0].groups[j]]);
 					}
-					console.log(groupNames);
 					groupsList.innerHTML = groupNames;
-				}
-				else {
-					companyName.value = "Please enter New Authority";
+				} else {
 					companyName.disabled = true;
-
-					companyAddress.value = "Please enter New Authority";
 					companyAddress.disabled = true;
-
-					authorityName.value = "Please enter New Authority";
 					authorityName.disabled = true;
-
-					authorityAddress.value = "Please enter New Authority";
 					authorityAddress.disabled = true;
-
-					carrierNumber.value = "Please enter New Authority";
 					carrierNumber.disabled = true;
 				}
 			},
@@ -249,46 +261,16 @@ geotab.addin.authoritySwitcher = function(api, state) {
 				tab.classList.remove("activeTab", "active");
 				menu.style.display = "none";
 
-			};
-			newTab.addEventListener("click", function() {
-				makeActive(newTab, newMenu);				
-				makeInActive(editTab, editMenu);
-				addNew.style.display = "block";
-				saveChanges.style.display = "none";
-				deleteAuth.style.display = "none";
-				grabGroups().then(function(rawGroupObj) {
-					populateSelectBox(rawGroupObj, true);
-					addingnew = true;
-				});
-			});
-			editTab.addEventListener("click", function() { 
-				makeActive(editTab, editMenu);
-				makeInActive(newTab, newMenu);
-				addNew.style.display = "none";
-				saveChanges.style.display = "inline-block";
-				deleteAuth.style.display = "inline-block";
-				grabGroups().then(function(rawGroupObj) {
-					populateSelectBox(rawGroupObj, false);
-					addingnew = false;
-				});				
-			});
+			},
 		
-		let modifyAuthorityInfo = function(clearAuth) {
-			
-			let groups = [];
-			
-			grabAddInData().then(function(addInObj) {
-				let tempObj = addInObj.length ? JSON.parse(addInObj[0].data) : {};
-				
-				for (let i = 0; i < groupsSelected.length; i++){
-					groups.push({
-						id: groupsSelected[i]
-					});
-					console.log(groups);
-				}
-				if (addInObj.length > 0) {
-					let authorityObj,
-						emptyAuth = false;
+			addAuthority = function(addingnew) {
+				let groups = [],
+					authorityObj,
+					emptyAuth = false;
+				grabAddInData().then(async function(addInObj) {
+					for (let i = 0; i < groupsSelected.length; i++) {
+						groups.push(groupsSelected[i]);
+					}
 					if (addingnew) {
 						authorityObj = {
 							"companyName": companyNameNew.value,
@@ -298,15 +280,8 @@ geotab.addin.authoritySwitcher = function(api, state) {
 							"carrierNumber": carrierNumberNew.value,
 							"groups": groupsSelected
 						};
-						for (let key in authorityObj) {
-							if (!authorityObj[key]) {
-								emptyAuth = true;
-								break;
-							}
-						}
-						tempObj.authorities.push(authorityObj);
-						addInDataCache.authorities.push(authorityObj);
 					} else {
+						// edit an existing authority
 						authorityObj = {
 							"companyName": companyName.value,
 							"companyAddress": companyAddress.value,
@@ -314,103 +289,92 @@ geotab.addin.authoritySwitcher = function(api, state) {
 							"authorityAddress": authorityAddress.value,
 							"carrierNumber": carrierNumber.value,
 							"groups": groupsSelected
-						};
-						for (let auth in tempObj.authorities) {
-							if (tempObj.authorities[auth].authorityName == selected) {
-								tempObj.authorities[auth] = authorityObj;
-							}
-						}	
+						};	
 					}
-					
-					
-					addInObj[0].data = JSON.stringify(tempObj);
-					addInObj[0].groups = [{"id":"GroupCompanyId"}];
-					if ((groups.length > 0) && !emptyAuth ) {
-						api.call("Set", {"typeName": "AddInData",
-							"entity": addInObj[0]
-						}, function() {
-							window.location.reload(false);
-						});
+					for (let key in authorityObj) {
+						if (!authorityObj[key]) {
+							emptyAuth = true;
+							break;
+						}
+					}
+					if (emptyAuth) {
+						errorHandler("Please fill out all the fields and select at least one group to add or edit an authority.");
 					} else {
-						if (!addingnew) {
-							alert("Please select at least one group!");
+						// check if we have no authorities in the addInData object
+						if (Object.keys(JSON.parse(addInObj[0].data)).length == 0) {
+							// add new authority
+							addInObj[0].data = JSON.stringify({
+								"authorities": [authorityObj]
+							});
+							await updateAddInData(addInObj);
+							window.location.reload(false);
+						} else {
+							let temp = JSON.parse(addInObj[0].data);
+							for (let auth in temp.authorities) {
+								if (temp.authorities[auth].authorityName == selected) {
+									temp.authorities[auth] = authorityObj;
+								}
+							}
+							
+							addInObj[0].data = JSON.stringify(temp);
+							await updateAddInData(addInObj);
+							window.location.reload(false);
 						}
-						else {
-							alert("You are missing one or more fields!");
-						}
-					}
-				}
-				else {
+					} 			
+				});
+			},
+		
+			addDataStore = function(groups, data) {
+				return new Promise(function(resolve, reject) {
+					data = data || [];
 					api.call("Add", {
 						"typeName": "AddInData",
 						"entity": {
-							"addInId": id,
+							"addInId": "aMO4bMooow0KlW2WdaT2suw",
 							"groups": groups,
-							"data": JSON.stringify({
-								"authorities": [{
-									"authorityName": authorityNameNew.value,
-									"authorityAddress": authorityAddressNew.value,
-									"companyName": companyNameNew.value,
-									"companyAddress": companyAddressNew.value,
-									"carrierNumber": carrierNumberNew.value,
-									"groups": groupsSelected
-								}]
-							})
+							"data": data
+							
 						}
 					}, function(results) {
-						window.location.reload(false);
-
+						resolve(results);
 					});
-				}		
-			});
-		},
+				});
+			},
 
 
-		//For deleting the current authority displayed
-		clearInfo = function() {
-			grabAddInData().then(function(tempData) {
-				console.log(tempData);
-				let tempAuthList,
-					removeAddInData;
-				
-				if (tempData.length == 0) {
-					removeAddInData = false;
-				} else {
-					tempAuthList = JSON.parse(tempData[0].data);
-					if (tempAuthList.authorities.length == 1) {
-						removeAddInData = true;
-					}
-					for (let i = 0; i < tempAuthList.authorities.length; i++) {
-						if (tempAuthList.authorities[i].authorityName == selected) {
-							tempAuthList.authorities.splice(i,1);
+			//For deleting the current authority displayed
+			clearInfo = function() {
+				grabAddInData().then(function(tempData) {
+					let tempAuthList = JSON.parse(tempData[0].data);
+					
+					if (tempData.length == 0) {
+						errorHandler("There are no authorities saved in this database to delete.");
+						// message to tell user that there is nothing to delete
+					} else if (tempAuthList.authorities.length > 1){
+						for (let i = 0; i < tempAuthList.authorities.length; i++) {
+							if (tempAuthList.authorities[i].authorityName == selected) {
+								tempAuthList.authorities.splice(i,1);
+							}
 						}
+						tempData[0].data = JSON.stringify(tempAuthList);
+						api.call("Set", {
+							"typeName": "AddInData",
+							"entity": tempData[0]
+						}, function (result) {
+							window.location.reload(false);
+						});
+					} else {
+						api.call("Remove", {"typeName": "AddInData",
+							"entity": {
+								"id": tempData[0].id,
+								"addInId": id
+							}
+						}, function(result) {
+							window.location.reload(false);
+						});
 					}
-					tempData[0].data = JSON.stringify(tempAuthList);
-				}
-
-				
-				
-				if (removeAddInData) {
-					api.call("Remove", {"typeName": "AddInData",
-						"entity": {
-							"id": tempData[0].id,
-							"addInId": id
-						}
-					}, function(result) {
-						window.location.reload(false);
-					});
-				} else {
-					console.log("No authority to delete");
-					window.location.reload(false);
-					/* api.call("Set", {
-						"typeName": "AddInData",
-						"entity": tempData[0]
-					}, function (result) {
-						window.location.reload(false);
-					}); */
-				}
-			});
-		};
+				});
+			};
 		// Simple Dialog Box Plugin by Taufik Nurrohman
 		// URL: http://www.dte.web.id + https://plus.google.com/108949996304093815163/about
 		// Licence: none
@@ -456,6 +420,7 @@ geotab.addin.authoritySwitcher = function(api, state) {
 						buttons: {
 							"Yes": function() {
 								clearInfo();
+								setDialog('close');
 							},
 							"Cancel": function() {
 								setDialog('close');
@@ -555,24 +520,14 @@ geotab.addin.authoritySwitcher = function(api, state) {
 
 		})(window, document);
 		return {
-			/**
-			 * initialize() is called only once when the Add-In is first loaded. Use this function to initialize the
-			 * Add-In's state such as default values or make API requests (MyGeotab or external) to ensure interface
-			 * is ready for the user.
-			 * @param {object} api - The GeotabApi object for making calls to MyGeotab.
-			 * @param {object} state - The page state object allows access to URL, page navigation and global group filter.
-			 * @param {function} addInReady - Call this when your initialize route is complete. Since your initialize routine
-			 *        might be doing asynchronous operations, you must call this method when the Add-In is ready
-			 *        for display to the user.
-			 */
 			initialize: function(api, state, addInReady) {
 				// MUST call addInReady when done any setup
 				addNew.addEventListener("click", function() {
-					modifyAuthorityInfo(false);
+					addAuthority(true);
 				}, false);
 
 				saveChanges.addEventListener("click", function() {
-					modifyAuthorityInfo(false);
+					addAuthority(false);
 				}, false);
 
 				clear.addEventListener("click", function() {
@@ -591,11 +546,30 @@ geotab.addin.authoritySwitcher = function(api, state) {
 								setDialog('close');
 							}
 						}
-					})
+					});
 				}, false);
+				newTab.addEventListener("click", function() {
+					makeActive(newTab, newMenu);				
+					makeInActive(editTab, editMenu);
+					addNew.style.display = "block";
+					saveChanges.style.display = "none";
+					deleteAuth.style.display = "none";
+					grabGroups().then(function(rawGroupObj) {
+						populateSelectBox(rawGroupObj, true);
+					});
+				});
+				editTab.addEventListener("click", function() { 
+					makeActive(editTab, editMenu);
+					makeInActive(newTab, newMenu);
+					addNew.style.display = "none";
+					saveChanges.style.display = "inline-block";
+					deleteAuth.style.display = "inline-block";
+					grabGroups().then(function(rawGroupObj) {
+						populateSelectBox(rawGroupObj, false);
+					});				
+				});
 				
 				authorityDropDown.addEventListener("change", function() {
-					console.log(this.value);
 					if (this.value) {
 						selected = this.value;
 						for (var i = 0; i < addInDataCache.authorities.length; i++) {
@@ -608,10 +582,8 @@ geotab.addin.authoritySwitcher = function(api, state) {
 								authorityAddress.value = addInDataCache.authorities[i].authorityAddress;
 								carrierNumber.value = addInDataCache.authorities[i].carrierNumber;
 								for (let j = 0; j < addInDataCache.authorities[i].groups.length; j++) {
-									console.log(addInDataCache.authorities[i].groups[j]);
 									groupNames.push(groupCache[addInDataCache.authorities[i].groups[j]]);
 								}
-								console.log(groupNames);
 								groupsList.innerHTML = groupNames;
 							}
 						}
@@ -628,34 +600,13 @@ geotab.addin.authoritySwitcher = function(api, state) {
 					groupsSelected = getSelectValues(selectedEditGroups);
 				});
 				
-
-				
 				init();
 				addInReady();
 			},
 
-			/**
-			 * focus() is called whenever the Add-In receives focus.
-			 *
-			 * The first time the user clicks on the Add-In menu, initialize() will be called and when completed, focus().
-			 * focus() will be called again when the Add-In is revisited. Note that focus() will also be called whenever
-			 * the global state of the MyGeotab application changes, for example, if the user changes the global group
-			 * filter in the UI.
-			 *
-			 * @param {object} api - The GeotabApi object for making calls to MyGeotab.
-			 * @param {object} state - The page state object allows access to URL, page navigation and global group filter.
-			 */
 			focus: function(api, state) {
 
 			},
-			/**
-			 * blur() is called whenever the user navigates away from the Add-In.
-			 *
-			 * Use this function to save the page state or commit changes to a data store or release memory.
-			 *
-			 * @param {object} api - The GeotabApi object for making calls to MyGeotab.
-			 * @param {object} state - The page state object allows access to URL, page navigation and global group filter.
-			 */
 			blur: function(api, state) {
 
 

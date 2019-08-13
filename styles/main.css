@@ -86,9 +86,9 @@
 	border: 1px solid #ce838f;
 	border-radius: 2px;
 	color: #cd0a0a;
-	width: 25%;
-	margin-top: 3px;
-	padding-left: 3px;
+	width: 24%;
+	margin-top: 0.3em;
+	padding: 0.8em 0.7em;
 }
 
 /* Skin for Simple Dialog Box Plugin */
