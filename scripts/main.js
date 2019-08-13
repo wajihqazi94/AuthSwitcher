@@ -262,42 +262,33 @@ geotab.addin.authoritySwitcher = function(api, state) {
 				menu.style.display = "none";
 
 			},
+			
+			emptyAuth = function(authorityObj) {
+				for (let key in authorityObj) {
+					if (!authorityObj[key]) {
+						return true;
+					}
+				}
+				return false;
+			},
 		
-			addAuthority = function(addingnew) {
+			addAuthority = function() {
 				let groups = [],
-					authorityObj,
-					emptyAuth = false;
+					authorityObj;
 				grabAddInData().then(async function(addInObj) {
 					for (let i = 0; i < groupsSelected.length; i++) {
 						groups.push(groupsSelected[i]);
 					}
-					if (addingnew) {
-						authorityObj = {
-							"companyName": companyNameNew.value,
-							"companyAddress": companyAddressNew.value,
-							"authorityName": authorityNameNew.value,
-							"authorityAddress": authorityAddressNew.value,
-							"carrierNumber": carrierNumberNew.value,
-							"groups": groupsSelected
-						};
-					} else {
-						// edit an existing authority
-						authorityObj = {
-							"companyName": companyName.value,
-							"companyAddress": companyAddress.value,
-							"authorityName": authorityName.value,
-							"authorityAddress": authorityAddress.value,
-							"carrierNumber": carrierNumber.value,
-							"groups": groupsSelected
-						};	
-					}
-					for (let key in authorityObj) {
-						if (!authorityObj[key]) {
-							emptyAuth = true;
-							break;
-						}
-					}
-					if (emptyAuth) {
+					authorityObj = {
+						"companyName": companyNameNew.value,
+						"companyAddress": companyAddressNew.value,
+						"authorityName": authorityNameNew.value,
+						"authorityAddress": authorityAddressNew.value,
+						"carrierNumber": carrierNumberNew.value,
+						"groups": groupsSelected
+					};
+					
+					if (emptyAuth(authorityObj)) {
 						errorHandler("Please fill out all the fields and select at least one group to add or edit an authority.");
 					} else {
 						// check if we have no authorities in the addInData object
@@ -310,17 +301,36 @@ geotab.addin.authoritySwitcher = function(api, state) {
 							window.location.reload(false);
 						} else {
 							let temp = JSON.parse(addInObj[0].data);
-							for (let auth in temp.authorities) {
-								if (temp.authorities[auth].authorityName == selected) {
-									temp.authorities[auth] = authorityObj;
-								}
-							}
-							
+							temp.authorities.push(authorityObj);
+
 							addInObj[0].data = JSON.stringify(temp);
 							await updateAddInData(addInObj);
 							window.location.reload(false);
 						}
 					} 			
+				});
+			},
+			
+			editAuthority = function() {
+				grabAddInData().then(async function(addInObj) {
+					let temp = JSON.parse(addInObj[0].data);
+					let authorityObj = {
+						"companyName": companyName.value,
+						"companyAddress": companyAddress.value,
+						"authorityName": authorityName.value,
+						"authorityAddress": authorityAddress.value,
+						"carrierNumber": carrierNumber.value,
+						"groups": groupsSelected
+					};
+					for (let auth in temp.authorities) {
+						if (temp.authorities[auth].authorityName == selected) {
+							temp.authorities[auth] = authorityObj;
+						}
+					}
+					
+					addInObj[0].data = JSON.stringify(temp);
+					await updateAddInData(addInObj);
+					window.location.reload(false);
 				});
 			},
 		
@@ -523,11 +533,11 @@ geotab.addin.authoritySwitcher = function(api, state) {
 			initialize: function(api, state, addInReady) {
 				// MUST call addInReady when done any setup
 				addNew.addEventListener("click", function() {
-					addAuthority(true);
+					addAuthority();
 				}, false);
 
 				saveChanges.addEventListener("click", function() {
-					addAuthority(false);
+					editAuthority();
 				}, false);
 
 				clear.addEventListener("click", function() {
