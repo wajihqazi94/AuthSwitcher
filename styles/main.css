@@ -117,10 +117,10 @@
   font:inherit;
   color:#25477b;
   font-weight:bold;
-  height:2em;
+  height:3em;
   line-height:2em;
   overflow:hidden;
-  padding:0 .8em;
+  padding:0.5em;
   background-color:#FFFFFF;
   cursor:move;
 }
