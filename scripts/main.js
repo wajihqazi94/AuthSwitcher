@@ -1,12 +1,5 @@
 geotab.addin.authoritySwitcher = function(api, state) {
-		let	addNew = document.getElementById("addAuth"),
-			saveChanges = document.getElementById("saveEdit"),
-			deleteAuth = document.getElementById("clear"),
-			helpButton = document.getElementById("authHelpButton"),
-			authorityDropDown = document.getElementById("import-authorities"),
-			groupsSelectBox = document.getElementById("import-groups"),
-			newSelectBox = document.getElementById("newGroups"),
-			companyName = document.getElementById("companyName"),
+		let	companyName = document.getElementById("companyName"),
 			companyAddress = document.getElementById("companyAddress"),
 			authorityName = document.getElementById("authorityName"),
 			authorityAddress = document.getElementById("authorityAddress"),
@@ -21,43 +14,7 @@ geotab.addin.authoritySwitcher = function(api, state) {
 			selected = "",
 			groupCache = {},
 			groupsSelected = [],
-			newTab = document.getElementById("newTab"),
-			editTab = document.getElementById("editTab"),
-			newMenu = document.getElementById("primaryTab"),
-			editMenu = document.getElementById("secondaryTab"),
-			alertError = document.getElementById("alertError"),
-			errorMessageTimer,
 			
-			init = function() {
-				checkUserClearance().then(async function(approved) {
-					if (approved) {
-						let rawGroupObj = await grabGroups();
-						populateSelectBox(rawGroupObj, true);
-						let rawAddInObj = await grabAddInData();
-						populateForm(rawAddInObj);
-						let groupIds = [];
-						for (let i = 0; i < rawGroupObj.length; i++) {
-							if (rawGroupObj[i].id !== "GroupCompanyId") {
-								groupIds.push({"id": rawGroupObj[i].id});
-							}
-						}
-						if (rawAddInObj.length === 0) {
-							let data = JSON.stringify(
-								{}
-							);
-							addDataStore(groupIds, data);
-						} else {
-							await updateAddInData(rawAddInObj, groupIds);
-						}
-					} else {
-						document.getElementById("authoritySwitcherTabs").style.display = "none";
-						helpButton.style.display = "none";
-						addNew.disabled = true;
-						errorHandler("Administrator Clearance is required to use this add-in.");
-					}
-				});
-				
-			},
 			isEmpty = function(obj) {
 				for (let prop in obj) {
 					if (obj.hasOwnProperty(prop)) {
@@ -133,6 +90,8 @@ geotab.addin.authoritySwitcher = function(api, state) {
 				});
 			},
 			errorHandler = function(msg) {
+				let alertError = document.getElementById("alertError"),
+					errorMessageTimer;
 				alertError.textContent = msg;
 				alertError.classList.remove("hidden");
 				clearTimeout(errorMessageTimer);
@@ -265,7 +224,7 @@ geotab.addin.authoritySwitcher = function(api, state) {
 			
 			emptyAuth = function(authorityObj) {
 				for (let key in authorityObj) {
-					if (!authorityObj[key]) {
+					if (!authorityObj[key] || authorityObj[key].length == 0) {
 						return true;
 					}
 				}
@@ -289,7 +248,7 @@ geotab.addin.authoritySwitcher = function(api, state) {
 					};
 					
 					if (emptyAuth(authorityObj)) {
-						errorHandler("Please fill out all the fields and select at least one group to add or edit an authority.");
+						errorHandler("Please fill out all the fields and select at least one group to add an authority.");
 					} else {
 						// check if we have no authorities in the addInData object
 						if (Object.keys(JSON.parse(addInObj[0].data)).length == 0) {
@@ -322,15 +281,19 @@ geotab.addin.authoritySwitcher = function(api, state) {
 						"carrierNumber": carrierNumber.value,
 						"groups": groupsSelected
 					};
-					for (let auth in temp.authorities) {
-						if (temp.authorities[auth].authorityName == selected) {
-							temp.authorities[auth] = authorityObj;
+					console.log(groupsSelected);
+					if (emptyAuth(authorityObj)) {
+						errorHandler("Please fill out all the fields and select at least one group to add or edit an authority.");
+					} else {
+						for (let auth in temp.authorities) {
+							if (temp.authorities[auth].authorityName == selected) {
+								temp.authorities[auth] = authorityObj;
+							}
 						}
+						addInObj[0].data = JSON.stringify(temp);
+						await updateAddInData(addInObj);
+						//window.location.reload(false);
 					}
-					
-					addInObj[0].data = JSON.stringify(temp);
-					await updateAddInData(addInObj);
-					window.location.reload(false);
 				});
 			},
 		
@@ -531,6 +494,18 @@ geotab.addin.authoritySwitcher = function(api, state) {
 		})(window, document);
 		return {
 			initialize: function(api, state, addInReady) {
+				let addNew = document.getElementById("addAuth"),
+					saveChanges = document.getElementById("saveEdit"),
+					deleteAuth = document.getElementById("clear"),
+					helpButton = document.getElementById("authHelpButton"),
+					authorityDropDown = document.getElementById("import-authorities"),
+					groupsSelectBox = document.getElementById("import-groups"),
+					newSelectBox = document.getElementById("newGroups"),
+					newTab = document.getElementById("newTab"),
+					editTab = document.getElementById("editTab"),
+					newMenu = document.getElementById("primaryTab"),
+					editMenu = document.getElementById("secondaryTab");
+					
 				// MUST call addInReady when done any setup
 				addNew.addEventListener("click", function() {
 					addAuthority();
@@ -610,7 +585,33 @@ geotab.addin.authoritySwitcher = function(api, state) {
 					groupsSelected = getSelectValues(selectedEditGroups);
 				});
 				
-				init();
+				checkUserClearance().then(async function(approved) {
+					if (approved) {
+						let rawGroupObj = await grabGroups();
+						populateSelectBox(rawGroupObj, true);
+						let rawAddInObj = await grabAddInData();
+						populateForm(rawAddInObj);
+						let groupIds = [];
+						for (let i = 0; i < rawGroupObj.length; i++) {
+							if (rawGroupObj[i].id !== "GroupCompanyId") {
+								groupIds.push({"id": rawGroupObj[i].id});
+							}
+						}
+						if (rawAddInObj.length === 0) {
+							let data = JSON.stringify(
+								{}
+							);
+							addDataStore(groupIds, data);
+						} else {
+							await updateAddInData(rawAddInObj, groupIds);
+						}
+					} else {
+						document.getElementById("authoritySwitcherTabs").style.display = "none";
+						helpButton.style.display = "none";
+						addNew.disabled = true;
+						errorHandler("Administrator Clearance is required to use this add-in.");
+					}
+				});
 				addInReady();
 			},
 
