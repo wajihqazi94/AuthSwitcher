@@ -117,10 +117,10 @@
   font:inherit;
   color:#25477b;
   font-weight:bold;
-  height:2em;
+  height:3em;
   line-height:2em;
   overflow:hidden;
-  padding:0 .8em;
+  padding:0.5em;
   background-color:#FFFFFF;
   cursor:move;
 }
@@ -161,7 +161,7 @@
   right:0;
   bottom:0;
   left:0;
-  height:2em;
+  height:3em;
   padding:.5em;
   background-color:#FFFFFF;
   border-top:1px solid #ccc;
