@@ -14,10 +14,10 @@
     
     <body>
         <div id="checkmateContent" class="centerPane" style="top: 5px; left: 5px;">
-            <div id="device_Id" class="extern checkmateFormPage" style="visibility: visible;" data-page="">
+            <div id="auth_Id" class="extern checkmateFormPage" style="visibility: visible;" data-page="">
                 <div class="checkmatePageHeader">
-                    <h1 id="device_DescriptionHeaderId" class="extern checkmatePageName">Switcher
-                        <span id="device_TitleName" class="subdued">Config</span>
+                    <h1 id="auth_DescriptionHeaderId" class="extern checkmatePageName">Authority
+                        <span id="auth_TitleName" class="subdued">Switcher</span>
                     </h1>
                 </div>
                 <div id="device_TabsId" class="extern vanillaTabsContainer">
@@ -26,7 +26,9 @@
                             <legend>Current Authority Information</legend>
                             <h3 id="current"></h3>
                             <div class="checkmateField" style="text-align:center">
-                                <select id="importauthorities" class="extern checkmateFormEditField"> </select>
+                                <select id="importauthorities" class="extern checkmateFormEditField">
+									<option disabled selected value> -- Select An Authority -- </option>
+								</select>
                             </div>
                             <div class="checkmateToolbarContainer">
                                 <span class="checkmateToolbar">

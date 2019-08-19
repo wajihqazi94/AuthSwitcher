@@ -292,7 +292,7 @@ geotab.addin.authoritySwitcher = function(api, state) {
 						}
 						addInObj[0].data = JSON.stringify(temp);
 						await updateAddInData(addInObj);
-						//window.location.reload(false);
+						window.location.reload(false);
 					}
 				});
 			},
@@ -361,7 +361,7 @@ geotab.addin.authoritySwitcher = function(api, state) {
 					ovr = b.createElement('div');
 					div.className = 'dialog-box-auth';
 					div.id = 'dialog-box-auth-' + uniqueId;
-					div.innerHTML = '<div class="dialog-title">&nbsp;</div><a href="javascript:;" class="dialog-minmax" title="Minimize">&ndash;</a><a href="javascript:;" class="dialog-close" title="Close">&times;</a><div class="dialog-content">&nbsp;</div><div class="dialog-action"></div>';
+					div.innerHTML = '<div class="dialog-title">&nbsp;</div></a><a href="javascript:;" class="dialog-close" title="Close">&times;</a><div class="dialog-content">&nbsp;</div><div class="dialog-action"></div>';
 					ovr.className = 'dialog-box-auth-overlay';
 				b.body.appendChild(div);
 				b.body.appendChild(ovr);
@@ -370,10 +370,9 @@ geotab.addin.authoritySwitcher = function(api, state) {
 			var maximize = false,
 				dialog = b.getElementById('dialog-box-auth-' + uniqueId), // The HTML of dialog box
 				dialog_title = dialog.children[0],
-				dialog_minmax = dialog.children[1],
-				dialog_close = dialog.children[2],
-				dialog_content = dialog.children[3],
-				dialog_action = dialog.children[4],
+				dialog_close = dialog.children[1],
+				dialog_content = dialog.children[2],
+				dialog_action = dialog.children[3],
 				dialog_overlay = dialog.nextSibling;
 
 			a.setDialog = function(set, config) {
@@ -461,9 +460,9 @@ geotab.addin.authoritySwitcher = function(api, state) {
 					return false;
 				};
 
-				dialog_minmax.innerHTML = '&ndash;';
+				/* dialog_minmax.innerHTML = '&ndash;';
 				dialog_minmax.title = 'Minimize';
-				dialog_minmax.onclick = dialogMinMax;
+				dialog_minmax.onclick = dialogMinMax; */
 
 				dialog_close.onclick = function() {
 					setDialog("close", {content:""});
@@ -477,7 +476,7 @@ geotab.addin.authoritySwitcher = function(api, state) {
 			};
 
 			// Maximized or minimized dialog box
-			function dialogMinMax() {
+			/* function dialogMinMax() {
 				if (maximize) {
 					dialog.className += ' minimize';
 					dialog_minmax.innerHTML = '+';
@@ -489,7 +488,7 @@ geotab.addin.authoritySwitcher = function(api, state) {
 					dialog_minmax.title = 'Minimize';
 					maximize = true;
 				}
-			}
+			} */
 
 		})(window, document);
 		return {
@@ -619,7 +618,6 @@ geotab.addin.authoritySwitcher = function(api, state) {
 
 			},
 			blur: function(api, state) {
-
 
 			}
 		};
