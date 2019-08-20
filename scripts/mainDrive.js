@@ -3,16 +3,6 @@ geotab.addin.authoritySwitcher = function(api, state) {
         storedData = [],
         currentUser,
 		current = document.getElementById("current"),
-        addInId = "aMO4bMooow0KlW2WdaT2suw",
-		
-		errorHandler = function(msg) {
-			alertError.textContent = msg;
-			alertError.classList.remove("hidden");
-			clearTimeout(errorMessageTimer);
-			errorMessageTimer = setTimeout(() => {
-				alertError.classList.add("hidden");
-			}, 3500);
-		},
 		
         saveNewInfo = function() {
 			grabUser().then(function(activeUser) {
