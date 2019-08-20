@@ -281,7 +281,7 @@ geotab.addin.authoritySwitcher = function(api, state) {
 						"carrierNumber": carrierNumber.value,
 						"groups": groupsSelected
 					};
-					console.log(groupsSelected);
+
 					if (emptyAuth(authorityObj)) {
 						errorHandler("Please fill out all the fields and select at least one group to add or edit an authority.");
 					} else {
@@ -319,8 +319,7 @@ geotab.addin.authoritySwitcher = function(api, state) {
 			clearInfo = function() {
 				grabAddInData().then(function(tempData) {
 					let tempAuthList = JSON.parse(tempData[0].data);
-					
-					if (tempData.length == 0) {
+					if (!emptyAuth(tempAuthList)) {
 						errorHandler("There are no authorities saved in this database to delete.");
 						// message to tell user that there is nothing to delete
 					} else if (tempAuthList.authorities.length > 1){
@@ -460,10 +459,6 @@ geotab.addin.authoritySwitcher = function(api, state) {
 					return false;
 				};
 
-				/* dialog_minmax.innerHTML = '&ndash;';
-				dialog_minmax.title = 'Minimize';
-				dialog_minmax.onclick = dialogMinMax; */
-
 				dialog_close.onclick = function() {
 					setDialog("close", {content:""});
 				};
@@ -474,21 +469,6 @@ geotab.addin.authoritySwitcher = function(api, state) {
 				maximize = (set === "open") ? true : false;
 
 			};
-
-			// Maximized or minimized dialog box
-			/* function dialogMinMax() {
-				if (maximize) {
-					dialog.className += ' minimize';
-					dialog_minmax.innerHTML = '+';
-					dialog_minmax.title = dialog_title.innerHTML.replace(/<.*?>/g,"");
-					maximize = false;
-				} else {
-					dialog.className = dialog.className.replace(/(^| )minimize($| )/g, "");
-					dialog_minmax.innerHTML = '&ndash;';
-					dialog_minmax.title = 'Minimize';
-					maximize = true;
-				}
-			} */
 
 		})(window, document);
 		return {
