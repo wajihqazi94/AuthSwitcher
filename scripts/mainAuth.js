@@ -141,6 +141,8 @@ geotab.addin.authoritySwitcher = function(api, state) {
 				}
 			},
 			populateSelectBox = function(groupsData, newAuthority) {
+				removeOptions(document.getElementById("import-groups"));
+				removeOptions(document.getElementById("newGroups"));
 				if (newAuthority) {
 					let groupNewSelect = document.getElementById("newGroups");
 					for (let i = 0; i < groupsData.length; i++) {
@@ -229,6 +231,12 @@ geotab.addin.authoritySwitcher = function(api, state) {
 					}
 				}
 				return false;
+			},
+			removeOptions = function(selectbox) {
+				for (let i = selectbox.options.length - 1 ; i >= 0 ; i--)
+				{
+					selectbox.remove(i);
+				}
 			},
 		
 			addAuthority = function() {
