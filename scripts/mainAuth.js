@@ -281,7 +281,7 @@ geotab.addin.authoritySwitcher = function(api, state) {
 						"carrierNumber": carrierNumber.value,
 						"groups": groupsSelected
 					};
-					console.log(groupsSelected);
+
 					if (emptyAuth(authorityObj)) {
 						errorHandler("Please fill out all the fields and select at least one group to add or edit an authority.");
 					} else {
